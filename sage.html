@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sage – study companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fffaf2;--page:#f4ebdc;--coral-l:#fde4dc;--lilac-l:#ece5f8;--card:#fff;--ink:#1b2823;--mute:#4f5d57;--pri:#2f6b5a;--pri-l:#d8eae2;--on-pri:#fff;--acc:#f5b85f;--acc-l:#fcecd0;--blue:#2f6fb0;--on-blue:#fff;--blue-l:#dcecf9;--line:#cfcabb;--glow:#ffe6c4;--track:#e6dfcf;--err:#b3261e;color-scheme:light;box-sizing:border-box}
+
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17211d;--page:#0f1613;--card:#223029;--ink:#eef3f0;--mute:#b4c3bb;--pri:#6fc4ab;--pri-l:#274238;--on-pri:#0f1b16;--acc-l:#3b3220;--coral-l:#3d2a27;--lilac-l:#2e2942;--blue:#7ab4ec;--on-blue:#0f1b16;--blue-l:#1f3447;--line:#34443d;--glow:#26382f;--track:#34443d;--err:#ff9a90;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17211d;--page:#0f1613;--card:#223029;--ink:#eef3f0;--mute:#b4c3bb;--pri:#6fc4ab;--pri-l:#274238;--on-pri:#0f1b16;--acc-l:#3b3220;--coral-l:#3d2a27;--lilac-l:#2e2942;--blue:#7ab4ec;--on-blue:#0f1b16;--blue-l:#1f3447;--line:#34443d;--glow:#26382f;--track:#34443d;--err:#ff9a90;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--page)}
+body{margin:0;min-height:100%;background:var(--page);color:var(--ink);font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.45;display:flex;justify-content:center}
+.app{width:100%;max-width:440px;min-height:100dvh;background:var(--bg);position:relative}
+@media(min-width:600px){body{padding:24px 0}.app{min-height:min(860px,calc(100dvh - 48px));border-radius:32px;border:1px solid var(--line);overflow:hidden}}
+.screen{display:none;flex-direction:column;gap:16px;padding:28px 22px 24px;min-height:inherit}
+.screen.on{display:flex}
+.spacer{flex:1}
+h1{font-size:28px;line-height:1.15;margin:0;font-weight:800}
+h2{font-size:15px;margin:0;color:var(--mute);font-weight:700}
+p{margin:0}.mute{color:var(--mute)}.c{text-align:center}
+.sage{width:52px;height:52px;flex:none}.sage.big{width:128px;height:128px;align-self:center}
+.say{display:flex;align-items:center;gap:12px}
+.bubble{background:var(--card);border-radius:16px;padding:11px 14px;font-size:14.5px;flex:1}
+.btn{appearance:none;border:2px solid var(--pri);background:var(--pri);color:var(--on-pri);font:inherit;font-weight:800;font-size:16px;padding:15px 20px;border-radius:16px;cursor:pointer;width:100%}
+.btn.sec{background:transparent;color:var(--pri)}
+.btn:focus-visible,.row button:focus-visible,input:focus-visible,select:focus-visible,.link:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.link{appearance:none;background:none;border:0;color:var(--mute);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;align-self:center}
+.card{background:var(--card);border-radius:14px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.card label{font-weight:700}
+.card input[type=time]{font:inherit;font-weight:700;color:var(--pri);background:transparent;border:0;text-align:right}
+.stack{display:flex;flex-direction:column;gap:8px}
+.plan .row{display:flex;gap:12px;align-items:center}
+.plan time{width:46px;font-size:13px;color:var(--mute);font-weight:700;flex:none}
+.plan .card{flex:1;padding:10px 14px}
+.plan .row.next .card{background:var(--pri-l);outline:2px solid var(--pri)}
+.plan .row.done .card span:first-child{color:var(--mute);text-decoration:line-through}
+.plan .row.water .card{background:var(--blue-l)}
+.tick{appearance:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--mute);background:transparent;color:var(--on-pri);font-weight:800;cursor:pointer;flex:none}
+.row.done .tick{background:var(--pri);border-color:var(--pri)}
+.mini{appearance:none;border:0;border-radius:10px;background:var(--blue);color:#fff;font:inherit;font-weight:800;padding:6px 12px;cursor:pointer}
+.tabs{display:flex;justify-content:space-around;background:var(--card);border-radius:20px;padding:12px;font-size:13px;font-weight:700;color:var(--mute)}
+.tabs b{color:var(--pri)}
+.ring{position:relative;width:236px;height:236px;align-self:center;margin:6px 0}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .t b{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums}
+.warm{background:var(--acc-l)}.cool{background:var(--blue-l)}
+.glasses{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.glasses i{width:24px;height:24px;border-radius:50%;border:2px solid var(--blue)}.glasses i.f{background:var(--blue)}
+.bar{display:flex;flex-direction:column;gap:6px}.bar div:first-child{display:flex;justify-content:space-between;font-weight:700;font-size:14px}
+.track{height:10px;background:var(--bg);border-radius:5px;overflow:hidden}.track i{display:block;height:100%;border-radius:5px;background:var(--pri)}
+.chk{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:12px 16px;font-weight:700;cursor:pointer;border:0;font-size:15px;color:var(--ink);width:100%;text-align:left;font-family:inherit}
+.chk i{width:24px;height:24px;border-radius:50%;border:2px solid var(--mute);flex:none}.chk.on i{background:var(--pri);border-color:var(--pri)}
+.chk.on{color:var(--mute)}
+@media (prefers-reduced-motion:no-preference){.screen.on{animation:in .25s ease-out}@keyframes in{from{opacity:0}to{opacity:1}}}
+.app{background:radial-gradient(120% 55% at 50% 0%,#ffe6c4 0%,transparent 65%),var(--bg);display:flex;flex-direction:column}
+.screen{min-height:0;flex:1}
+@media(min-width:600px){.app{overflow:clip}}
+h1,.hero b{font-family:'Fredoka','Nunito',sans-serif;letter-spacing:.2px}
+.s{font-size:13px}
+.card{box-shadow:0 8px 18px -12px rgba(140,95,40,.45)}
+.hero{display:flex;align-items:center;gap:14px;border-radius:24px;padding:16px;background:linear-gradient(135deg,#ffd9a0,#ffc2a8);color:#3a2616}
+.hero .sage{width:72px;height:72px}.hero b{font-size:23px;display:block;line-height:1.15;margin-bottom:2px}.hero span{font-size:14.5px}
+.plan .k-breakfast .card,.plan .k-lunch .card,.plan .k-dinner .card{background:var(--acc-l)}
+.plan .k-classes .card{background:var(--blue-l)}.plan .k-workout .card{background:var(--coral-l)}.plan .k-sleep .card{background:var(--lilac-l)}
+.plan .row.next .card{background:#fff;outline:2px solid var(--pri)}
+.tabbar{position:sticky;bottom:12px;display:none;justify-content:space-around;background:#fff;border-radius:22px;padding:8px;margin:0 14px 12px;box-shadow:0 10px 26px -10px rgba(140,95,40,.55);z-index:5}
+.tabbar.on{display:flex}
+.tabbar button{appearance:none;border:0;background:transparent;font:inherit;font-weight:700;font-size:12px;color:var(--mute);padding:6px 12px;border-radius:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tabbar button.on{color:var(--pri);background:var(--pri-l)}.tabbar span{font-size:20px}
+.in{font:inherit;border:1.5px solid var(--line);border-radius:12px;padding:11px;background:#fff;color:var(--ink)}
+.chip{appearance:none;border:1.5px solid var(--pri);background:#fff;color:var(--pri);font:inherit;font-weight:700;font-size:13px;padding:7px 12px;border-radius:999px;cursor:pointer}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.card input[type=checkbox]{width:22px;height:22px;accent-color:var(--pri)}
+.chat{display:flex;flex-direction:column;gap:10px;flex:1}.msg{max-width:84%;padding:10px 14px;border-radius:16px;font-size:14.5px;background:#fff;box-shadow:0 6px 14px -10px rgba(140,95,40,.5)}.msg.me{align-self:flex-end;background:var(--pri);color:var(--on-pri)}
+.ask{display:flex;gap:8px}.ask .in{flex:1;min-width:0}.ask .btn{width:auto}
+.alert{position:fixed;inset:0;background:rgba(60,40,20,.45);display:none;align-items:center;justify-content:center;padding:24px;z-index:20}.alert.on{display:flex}
+.alert .box{background:#fff;border-radius:24px;padding:22px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+.lform{display:flex;flex-direction:column;gap:14px}
+.fld{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px}
+.err{color:#b3261e;font-weight:700;font-size:13px;min-height:18px}
+.show{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--mute);cursor:pointer}.show input{width:18px;height:18px;accent-color:var(--pri)}
+/* contrast fixes: every surface and text colour now comes from theme tokens */
+.app{background:radial-gradient(120% 55% at 50% 0%,var(--glow) 0%,transparent 65%),var(--bg)}
+.plan .row.next .card,.tabbar,.in,.chip,.msg,.alert .box{background:var(--card)}
+.mini{background:var(--blue);color:var(--on-blue)}
+.track{background:var(--track)}
+.err{color:var(--err)}
+::placeholder{color:var(--mute);opacity:1}
+.btn:focus-visible,.row button:focus-visible,input:focus-visible,select:focus-visible,.link:focus-visible{outline-color:var(--pri)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="sh" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#f5b85f"/><ellipse cx="35" cy="42" rx="5" ry="6.5" fill="#22302b"/><ellipse cx="65" cy="42" rx="5" ry="6.5" fill="#22302b"/><path d="M36 62 Q50 76 64 62" fill="none" stroke="#22302b" stroke-width="4" stroke-linecap="round"/></symbol>
+<symbol id="sf" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#f5b85f"/><ellipse cx="35" cy="42" rx="5" ry="6.5" fill="#22302b"/><ellipse cx="65" cy="42" rx="5" ry="6.5" fill="#22302b"/><path d="M38 66 H62" stroke="#22302b" stroke-width="4" stroke-linecap="round"/></symbol>
+</svg>
+<main class="app">
+
+<section class="screen on" id="login">
+<div class="spacer"></div>
+<svg class="sage big" role="img" aria-label="Sage, your study companion"><use href="#sh"/></svg>
+<h1 class="c">Welcome back</h1>
+<p class="mute c">Log in to continue with Sage.</p>
+<form class="lform" id="loginForm" novalidate>
+<label class="fld">Username<input class="in" id="l_user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Enter username"></label>
+<label class="fld">Password<input class="in" id="l_pass" type="password" autocomplete="current-password" placeholder="Enter password"></label>
+<label class="show"><input type="checkbox" id="showPw"> Show password</label>
+<p class="err" id="l_err" role="alert"></p>
+<button class="btn" type="submit">Log in</button>
+</form>
+<div class="spacer"></div>
+</section>
+
+<section class="screen" id="welcome">
+<div class="spacer"></div>
+<svg class="sage big" role="img" aria-label="Sage, your study companion"><use href="#sh"/></svg>
+<h1 class="c">Hi, I’m Sage</h1>
+<p class="mute c">Your study buddy. I’ll study alongside you and gently remind you to eat, sleep and move, so you’re not just grinding.</p>
+<div class="spacer"></div>
+<button class="btn" data-go="setup">Get started</button>
+<p class="mute c" style="font-size:13px">Takes about 2 minutes</p>
+</section>
+
+<section class="screen" id="setup">
+<h1>Tell me about your day</h1>
+<p class="mute">I’ll plan around the things you shouldn’t skip.</p>
+<h2>Classes and study</h2>
+<div class="stack">
+<div class="card"><label for="t_classes">Classes start</label><input type="time" id="t_classes"></div>
+<div class="card"><label for="t_study">Study block</label><input type="time" id="t_study"></div>
+</div>
+<h2>Daily essentials</h2>
+<div class="stack">
+<div class="card"><label for="t_breakfast">Breakfast</label><input type="time" id="t_breakfast"></div>
+<div class="card"><label for="t_lunch">Lunch</label><input type="time" id="t_lunch"></div>
+<div class="card"><label for="t_workout">Workout</label><input type="time" id="t_workout"></div>
+<div class="card"><label for="t_dinner">Dinner</label><input type="time" id="t_dinner"></div>
+<div class="card"><label for="t_sleep">Sleep</label><input type="time" id="t_sleep"></div>
+<div class="card cool"><span><b>Water reminders</b><br><span class="mute" style="font-size:13px">Choose how often in the Reminders tab</span></span></div>
+</div>
+<label class="card" style="cursor:pointer"><span><b>Demo speed</b><br><span class="mute" style="font-size:13px">1 second counts as 1 minute</span></span><input type="checkbox" id="demo"></label>
+<div class="spacer"></div>
+<button class="btn" id="build">Build my plan</button>
+</section>
+
+<section class="screen" id="today">
+<p class="mute" id="date" style="font-size:13px;font-weight:700"></p>
+<div class="hero"><svg class="sage"><use href="#sh"/></svg><div><b id="greet">Hello</b><span id="todaySay"></span></div></div>
+<h2>Today’s plan</h2>
+<div class="plan stack" id="plan"></div>
+<div class="spacer"></div>
+<button class="btn" id="startStudy">Start study session</button>
+<button class="link" data-go="setup">Edit my plan</button>
+<button class="link" id="logout">Log out</button>
+</section>
+
+<section class="screen" id="study">
+<h2>Studying together</h2>
+<h1 style="font-size:20px">Internet Programming · Ch. 4</h1>
+<div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" fill="none" stroke="var(--pri-l)" stroke-width="9"/><circle id="arc" cx="60" cy="60" r="54" fill="none" stroke="var(--pri)" stroke-width="9" stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="339.3"/></svg>
+<div class="t"><b id="clock">0:00:00</b><span class="mute" style="font-size:13px">of 1:30 focus block</span></div></div>
+<div class="say"><svg class="sage"><use href="#sh"/></svg><div class="bubble" id="studySay">I’m right here with you. Notes open, phone on silent.</div></div>
+<div class="spacer"></div>
+<button class="btn sec" id="pause">Pause</button>
+<button class="link" id="endNow">End session</button>
+<p class="mute c" id="demoNote" style="font-size:12px"></p>
+</section>
+
+<section class="screen cool" id="water">
+<div class="spacer"></div>
+<svg class="sage big"><use href="#sh"/></svg>
+<h1 class="c">Time for some water</h1>
+<p class="mute c">It’s been a while since your last sip. A glass now keeps your focus sharp.</p>
+<div class="card" style="flex-direction:column"><b id="wcount"></b><div class="glasses" id="wdots"></div></div>
+<div class="spacer"></div>
+<button class="btn" id="drank">I drank water</button>
+<button class="btn sec" id="wsnooze">Remind me in 10 min</button>
+<p class="mute c" style="font-size:13px">I’ll nudge you again, no pressure.</p>
+</section>
+
+<section class="screen warm" id="meal">
+<div class="spacer"></div>
+<svg class="sage big"><use href="#sf"/></svg>
+<h1 class="c">90 minutes in. Nice focus.</h1>
+<p class="mute c" id="mealTxt"></p>
+<div class="card"><b>Lunch</b><b style="color:var(--pri)" id="mealCard"></b></div>
+<div class="spacer"></div>
+<button class="btn" id="takeBreak">Take my lunch break</button>
+<button class="btn sec" id="msnooze">10 more minutes</button>
+<p class="mute c" style="font-size:13px">I’ll keep your place in Chapter 4.</p>
+</section>
+
+<section class="screen" id="break">
+<h1>Enjoy your break</h1>
+<div class="say"><svg class="sage"><use href="#sh"/></svg><div class="bubble" id="breakSay">I’ll hold your spot. Back in 20 minutes?</div></div>
+<div class="card" style="background:var(--pri-l)"><span>Break time left</span><b style="font-size:24px;color:var(--pri);font-variant-numeric:tabular-nums" id="bclock">20:00</b></div>
+<h2>Quick check-in</h2>
+<div class="stack">
+<button class="chk" data-c="eat"><i></i>Eat lunch</button>
+<button class="chk" data-c="water"><i></i>Drink some water</button>
+<button class="chk" data-c="stretch"><i></i>Stretch for 5 minutes</button>
+</div>
+<div class="spacer"></div>
+<button class="btn" id="wrap">Wrap up my day</button>
+<button class="btn sec" id="backStudy">Back to studying</button>
+</section>
+
+<section class="screen" id="balance">
+<h1>Today’s balance</h1>
+<p class="mute" id="bdate" style="font-size:13px;font-weight:700"></p>
+<div class="card" style="flex-direction:column;align-items:stretch;gap:14px" id="bars"></div>
+<div class="say"><svg class="sage"><use href="#sh"/></svg><div class="bubble" id="balSay"></div></div>
+<div class="spacer"></div>
+<button class="btn" data-go="today">Done</button>
+<button class="link" id="reset">Reset today</button>
+</section>
+
+<section class="screen" id="reminders">
+<h1>Reminders</h1>
+<p class="mute">Sage nudges you so the basics don’t slip.</p>
+<h2>Automatic</h2>
+<div class="stack">
+<label class="card"><span><b>Meal reminders</b><br><span class="mute s">At each meal time</span></span><input type="checkbox" id="r_meals"></label>
+<label class="card cool"><span><b>Water</b><br><span class="mute s">While you study, every</span></span><select class="in" id="r_waterEvery"><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="0">Off</option></select></label>
+<label class="card"><span><b>Sleep wind-down</b><br><span class="mute s">30 minutes before bed</span></span><input type="checkbox" id="r_sleep"></label>
+<div class="card"><span><b>Phone notifications</b><br><span class="mute s">Alerts even when this tab is in the background</span></span><button class="chip" id="r_notif">Turn on</button></div>
+</div>
+<h2>My reminders</h2>
+<div class="stack" id="myRems"></div>
+<div class="card" style="flex-wrap:wrap"><input class="in" id="newText" placeholder="e.g. Call home" aria-label="Reminder text" style="flex:1;min-width:140px"><input class="in" type="time" id="newTime" aria-label="Reminder time"><button class="btn" id="addRem">Add reminder</button></div>
+<button class="link" id="testRem">Preview a reminder</button>
+</section>
+
+<section class="screen" id="sagechat">
+<div class="say"><svg class="sage"><use href="#sh"/></svg><div><h1 style="font-size:22px">Chat with Sage</h1><span class="mute s">Ask about your day</span></div></div>
+<div class="chat" id="chat"></div>
+<div class="chips" id="chips"></div>
+<div class="ask"><input class="in" id="askIn" placeholder="Type to Sage" aria-label="Message to Sage"><button class="btn" id="askBtn">Send</button></div>
+</section>
+
+<nav class="tabbar" id="tabbar" aria-label="Main"><button data-go="today"><span>🏠</span>Today</button><button data-go="reminders"><span>⏰</span>Reminders</button><button data-go="balance"><span>📊</span>Balance</button><button data-go="sagechat"><span>💬</span>Sage</button></nav>
+</main>
+<div class="alert" id="alert" role="alertdialog" aria-labelledby="alTitle"><div class="box"><svg class="sage"><use href="#sh"/></svg><h1 id="alTitle" style="font-size:22px"></h1><p class="mute" id="alBody"></p><button class="btn" id="alOk">Got it</button><button class="btn sec" id="alSnooze">Remind me in 10 min</button></div></div>
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var KEYS=['breakfast','classes','study','lunch','workout','dinner','sleep'];
+var LABEL={breakfast:'Breakfast',classes:'Classes',study:'Study · Internet Programming',lunch:'Lunch',workout:'Workout',dinner:'Dinner',sleep:'Sleep'};
+var st={times:{breakfast:'08:00',classes:'09:00',study:'12:00',lunch:'13:30',workout:'18:00',dinner:'20:00',sleep:'23:30'},demo:true,done:{},glasses:0,studied:0,chk:{},rem:{meals:true,sleep:true,waterEvery:60,list:[]}};
+var ICON={breakfast:'🍳',classes:'📚',study:'💻',lunch:'🍛',workout:'🏃',dinner:'🍲',sleep:'🌙'};
+try{var s=JSON.parse(localStorage.getItem('sage-v1')||'null');if(s)for(var k in s)st[k]=s[k];}catch(e){}
+function save(){try{localStorage.setItem('sage-v1',JSON.stringify(st))}catch(e){}}
+var sess={sec:0,run:false,timer:null,nextWater:3600,nextMeal:5400,brk:1200,bt:null};
+var speed=function(){return st.demo?60:1};
+var TABS=['today','reminders','balance','sagechat'];
+function go(id){$$('.screen').forEach(function(x){x.classList.toggle('on',x.id===id)});window.scrollTo(0,0);$('#tabbar').classList.toggle('on',TABS.indexOf(id)>-1);$$('#tabbar button').forEach(function(b){b.classList.toggle('on',b.dataset.go===id)});if(id==='today')renderToday();if(id==='balance')renderBalance();if(id==='reminders')renderRems();if(id==='sagechat')initChat();}
+$$('[data-go]').forEach(function(b){b.addEventListener('click',function(){go(b.dataset.go)})});
+function fmt(s){var h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0')}
+var dateStr=new Date().toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});
+$('#date').textContent=dateStr;$('#bdate').textContent=dateStr;
+
+/* login */
+var USER='admin',PASS='12345';
+function authed(){try{return localStorage.getItem('sage-auth')==='1'}catch(e){return false}}
+$('#loginForm').addEventListener('submit',function(e){e.preventDefault();
+  var u=$('#l_user').value.trim().toLowerCase(),p=$('#l_pass').value;
+  if(u===USER&&p===PASS){try{localStorage.setItem('sage-auth','1')}catch(x){}$('#l_err').textContent='';$('#l_pass').value='';$('#l_user').value='';go('welcome')}
+  else{$('#l_err').textContent='Wrong username or password. Please try again.';$('#l_pass').select()}});
+$('#showPw').addEventListener('change',function(){$('#l_pass').type=this.checked?'text':'password'});
+$('#logout').addEventListener('click',function(){try{localStorage.removeItem('sage-auth')}catch(x){}$('#showPw').checked=false;$('#l_pass').type='password';go('login')});
+
+/* setup */
+KEYS.forEach(function(k){$('#t_'+k).value=st.times[k]});$('#demo').checked=!!st.demo;
+$('#build').addEventListener('click',function(){KEYS.forEach(function(k){st.times[k]=$('#t_'+k).value||st.times[k]});st.demo=$('#demo').checked;save();go('today')});
+
+/* today */
+function renderToday(){
+  var items=KEYS.map(function(k){return{k:k,t:st.times[k]}}).sort(function(a,b){return a.t<b.t?-1:1});
+  var wi=items.length-1;items.splice(wi,0,{k:'water',t:'Hourly'});
+  var nextFound=false,nextItem=null,h='';
+  items.forEach(function(it){
+    if(it.k==='water'){h+='<div class="row water"><time>Hourly</time><div class="card"><span>Water reminders</span><span><b>'+st.glasses+'</b> of 8 <button class="mini" id="addGlass" aria-label="Log a glass of water">+ Glass</button></span></div></div>';return}
+    var done=!!st.done[it.k],isNext=!done&&!nextFound;if(isNext){nextFound=true;nextItem=it}
+    h+='<div class="row k-'+it.k+(done?' done':'')+(isNext?' next':'')+'"><time>'+it.t+'</time><div class="card"><span>'+ICON[it.k]+' '+LABEL[it.k]+'</span><button class="tick" data-k="'+it.k+'" aria-label="Mark '+LABEL[it.k]+(done?' not done':' done')+'">'+(done?'✓':'')+'</button></div></div>';
+  });
+  $('#plan').innerHTML=h;var hr=new Date().getHours();$('#greet').textContent=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  $('#todaySay').textContent=nextItem?('Next up: '+LABEL[nextItem.k].split(' · ')[0].toLowerCase()+' at '+nextItem.t+'. Tap the circle when you’ve done something.'):'Everything on today’s list is done. Nice.';
+  $$('.tick').forEach(function(b){b.addEventListener('click',function(){st.done[b.dataset.k]=!st.done[b.dataset.k];save();renderToday()})});
+  var g=$('#addGlass');if(g)g.addEventListener('click',function(){st.glasses=Math.min(8,st.glasses+1);save();renderToday()});
+}
+
+/* study */
+function draw(){$('#clock').textContent=fmt(sess.sec);$('#arc').style.strokeDashoffset=339.3*(1-Math.min(1,sess.sec/5400))}
+function runStudy(){clearInterval(sess.timer);sess.run=true;$('#pause').textContent='Pause';sess.timer=setInterval(tick,1000)}
+function stopStudy(){clearInterval(sess.timer);sess.run=false}
+function tick(){
+  sess.sec+=speed();draw();
+  if(sess.sec>=sess.nextWater&&sess.nextWater<=sess.nextMeal){stopStudy();$('#wcount').textContent=st.glasses+' of 8 glasses today';$('#wdots').innerHTML=Array.apply(null,Array(8)).map(function(_,i){return'<i class="'+(i<st.glasses?'f':'')+'"></i>'}).join('');go('water');return}
+  if(sess.sec>=sess.nextMeal){stopStudy();$('#mealTxt').textContent='Lunch was planned for '+st.times.lunch+'. You’ll think better fed.';$('#mealCard').textContent=st.times.lunch+' · 30 min';go('meal')}
+}
+$('#startStudy').addEventListener('click',function(){sess.sec=0;sess.nextWater=wInt();sess.nextMeal=5400;draw();$('#demoNote').textContent=st.demo?'Demo speed is on: 1 second counts as 1 minute.':'';go('study');runStudy()});
+$('#pause').addEventListener('click',function(){if(sess.run){stopStudy();this.textContent='Resume'}else runStudy()});
+$('#endNow').addEventListener('click',function(){stopStudy();finishStudy();go('balance')});
+function finishStudy(){st.studied+=Math.floor(sess.sec/60);if(sess.sec>=60)st.done.study=true;sess.sec=0;save()}
+
+/* water */
+$('#drank').addEventListener('click',function(){st.glasses=Math.min(8,st.glasses+1);sess.nextWater=sess.sec+wInt();save();go('study');runStudy()});
+$('#wsnooze').addEventListener('click',function(){sess.nextWater=sess.sec+600;go('study');runStudy()});
+
+/* meal + break */
+$('#msnooze').addEventListener('click',function(){sess.nextMeal=sess.sec+600;go('study');runStudy()});
+$('#takeBreak').addEventListener('click',function(){
+  sess.nextMeal=Infinity;st.chk={};$$('.chk').forEach(function(c){c.classList.remove('on')});sess.brk=1200;$('#bclock').textContent='20:00';$('#breakSay').textContent='I’ll hold your spot. Back in 20 minutes?';
+  clearInterval(sess.bt);sess.bt=setInterval(function(){sess.brk=Math.max(0,sess.brk-speed());$('#bclock').textContent=String(Math.floor(sess.brk/60)).padStart(2,'0')+':'+String(sess.brk%60).padStart(2,'0');if(sess.brk===0){clearInterval(sess.bt);$('#breakSay').textContent='Break’s over. Ready when you are.'}},1000);
+  go('break')});
+$$('.chk').forEach(function(b){b.addEventListener('click',function(){
+  var k=b.dataset.c;if(st.chk[k])return;st.chk[k]=true;b.classList.add('on');
+  if(k==='eat')st.done.lunch=true;if(k==='water')st.glasses=Math.min(8,st.glasses+1);if(k==='stretch')st.done.stretch=true;save()})});
+$('#backStudy').addEventListener('click',function(){clearInterval(sess.bt);go('study');runStudy()});
+$('#wrap').addEventListener('click',function(){clearInterval(sess.bt);finishStudy();go('balance')});
+
+/* balance */
+function bar(l,v,p,c){return'<div class="bar"><div><span>'+l+'</span><span class="mute">'+v+'</span></div><div class="track"><i style="width:'+Math.round(Math.min(1,p)*100)+'%;'+(c?'background:'+c:'')+'"></i></div></div>'}
+function renderBalance(){
+  var meals=['breakfast','lunch','dinner'].filter(function(k){return st.done[k]}).length,m=st.studied,mv=st.done.workout?1:0;
+  $('#bars').innerHTML=bar('Study',Math.floor(m/60)+'h '+(m%60)+'m of 5h',m/300)+bar('Meals',meals+' of 3',meals/3,'var(--acc)')+bar('Movement',mv?'Done':'Not yet',mv,'var(--acc)')+bar('Water',st.glasses+' of 8 glasses',st.glasses/8,'var(--blue)')+bar('Sleep plan','Bed by '+st.times.sleep,.75);
+  var msg;
+  if(m===0)msg='No study logged yet. Start a session whenever you’re ready, and I’ll sit with you.';
+  else if(meals>=2)msg='You studied hard and still ate on time. That’s the combo. Sleep by '+st.times.sleep+' and I’ll see you tomorrow.';
+  else msg='Good study time. '+(3-meals)+' meal'+(3-meals>1?'s are':' is')+' still open, and food is part of studying well.';
+  if(m>0&&st.glasses<4)msg+=' Water’s a bit low: a glass before bed?';
+  $('#balSay').textContent=msg;
+}
+$('#reset').addEventListener('click',function(){st.done={};st.glasses=0;st.studied=0;st.chk={};save();renderBalance()});
+
+/* reminders */
+function wInt(){return st.rem.waterEvery>0?st.rem.waterEvery*60:Infinity}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var alertQ=[],alertCur=null;
+function ping(t,b){alertQ.push({t:t,b:b});nextAlert();try{if('Notification' in window&&Notification.permission==='granted')new Notification(t,{body:b})}catch(e){}}
+function nextAlert(){if(alertCur||!alertQ.length)return;alertCur=alertQ.shift();$('#alTitle').textContent=alertCur.t;$('#alBody').textContent=alertCur.b;$('#alert').classList.add('on');$('#alOk').focus()}
+function closeAlert(){$('#alert').classList.remove('on');alertCur=null;nextAlert()}
+$('#alOk').addEventListener('click',closeAlert);
+$('#alSnooze').addEventListener('click',function(){var a=alertCur;closeAlert();if(a)setTimeout(function(){ping(a.t,a.b)},600000)});
+function p2(n){return String(n).padStart(2,'0')}
+function minus(t,m){var p=t.split(':'),x=(+p[0]*60+ +p[1]-m+1440)%1440;return p2(Math.floor(x/60))+':'+p2(x%60)}
+var fired={};
+function check(){var d=new Date(),now=p2(d.getHours())+':'+p2(d.getMinutes()),day=d.toDateString();
+ function once(k,fn){var f=day+k+now;if(fired[f])return;fired[f]=1;fn()}
+ if(st.rem.meals)['breakfast','lunch','dinner'].forEach(function(k){if(st.times[k]===now&&!st.done[k])once(k,function(){ping(LABEL[k]+' time','It’s '+now+'. Eat something real, then get back to it.')})});
+ if(st.rem.sleep&&minus(st.times.sleep,30)===now)once('sleep',function(){ping('Time to wind down','Bed is at '+st.times.sleep+'. Wrap up soon: tomorrow-you will thank you.')});
+ st.rem.list.forEach(function(r){if(r.time===now)once('r'+r.id,function(){ping(r.text,'Your reminder for '+r.time)})});}
+setInterval(check,15000);check();
+function renderRems(){
+ $('#r_meals').checked=st.rem.meals;$('#r_sleep').checked=st.rem.sleep;$('#r_waterEvery').value=String(st.rem.waterEvery);
+ var h='';st.rem.list.sort(function(a,b){return a.time<b.time?-1:1}).forEach(function(r){h+='<div class="card"><span><b>'+esc(r.text)+'</b><br><span class="mute s">Every day at '+r.time+'</span></span><button class="chip" data-del="'+r.id+'" aria-label="Delete reminder '+esc(r.text)+'">Delete</button></div>'});
+ $('#myRems').innerHTML=h||'<p class="mute s">No reminders of your own yet. Add one below.</p>';
+ $$('[data-del]').forEach(function(b){b.addEventListener('click',function(){st.rem.list=st.rem.list.filter(function(r){return String(r.id)!==b.dataset.del});save();renderRems()})});
+ var n=$('#r_notif');if(!('Notification' in window)){n.textContent='Not supported';n.disabled=true}else if(Notification.permission==='granted'){n.textContent='On';n.disabled=true}else if(Notification.permission==='denied'){n.textContent='Blocked';n.disabled=true}
+}
+$('#r_meals').addEventListener('change',function(){st.rem.meals=this.checked;save()});
+$('#r_sleep').addEventListener('change',function(){st.rem.sleep=this.checked;save()});
+$('#r_waterEvery').addEventListener('change',function(){st.rem.waterEvery=+this.value;save()});
+$('#addRem').addEventListener('click',function(){var t=$('#newText').value.trim(),tm=$('#newTime').value;if(!t){$('#newText').focus();return}if(!tm){$('#newTime').focus();return}st.rem.list.push({id:Date.now(),text:t,time:tm});$('#newText').value='';$('#newTime').value='';save();renderRems()});
+$('#testRem').addEventListener('click',function(){ping('Water time','A glass now keeps your focus sharp.')});
+$('#r_notif').addEventListener('click',function(){try{Notification.requestPermission().then(renderRems)}catch(e){}});
+
+/* chat */
+var chatOn=false;
+function say(w,t){var m=document.createElement('div');m.className='msg'+(w==='me'?' me':'');m.textContent=t;$('#chat').appendChild(m);m.scrollIntoView({block:'end'})}
+function reply(q){var l=q.toLowerCase(),m=st.studied,ml=['breakfast','lunch','dinner'].filter(function(k){return st.done[k]}).length,a;
+ if(/how am i|doing|progress/.test(l))a='So far today: '+Math.floor(m/60)+'h '+(m%60)+'m of study, '+ml+' of 3 meals and '+st.glasses+' of 8 glasses of water.'+(ml<2?' Food is the easiest gap to fix.':' That’s a solid balance.');
+ else if(/tired|sleepy|exhaust/.test(l))a='That’s your body talking. Try a 10 minute break with water and a stretch. Bed is planned for '+st.times.sleep+'.';
+ else if(/lunch|skip|hungry|eat/.test(l))a=st.done.lunch?'Lunch is already logged. Nice.':'Lunch is planned for '+st.times.lunch+'. Even a small meal helps you focus. Turn on meal reminders in the Reminders tab and I’ll nudge you.';
+ else if(/water|drink|thirst/.test(l))a='You’ve logged '+st.glasses+' of 8 glasses. A glass now is an easy win.';
+ else if(/evening|tonight|plan/.test(l))a='Tonight: workout at '+st.times.workout+', dinner at '+st.times.dinner+', then sleep at '+st.times.sleep+'.';
+ else if(/stress|anxious|overwhelm/.test(l))a='Take one slow breath. Pick a single small task for the next 25 minutes, and I’ll sit with you.';
+ else a='I can talk about your study time, meals, water or sleep. Try one of the buttons below.';
+ setTimeout(function(){say('sage',a)},350)}
+function send(t){t=t.trim();if(!t)return;say('me',t);reply(t);$('#askIn').value=''}
+function initChat(){if(chatOn)return;chatOn=true;say('sage','Hi, I’m Sage. Ask me how your day is going, or tap a question below.');
+ $('#chips').innerHTML=['How am I doing?','I’m tired','I skipped lunch','Plan my evening','Should I drink water?'].map(function(q){return'<button class="chip">'+q+'</button>'}).join('');
+ $$('#chips .chip').forEach(function(c){c.addEventListener('click',function(){send(c.textContent)})})}
+$('#askBtn').addEventListener('click',function(){send($('#askIn').value)});
+$('#askIn').addEventListener('keydown',function(e){if(e.key==='Enter')send(this.value)});
+
+
+})();
+</script>
+</body>
+</html>
